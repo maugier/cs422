@@ -1,25 +1,84 @@
 \documentclass[a4paper,11pt]{article}
 
 \title{CS422 Project Proposal: Searching for Markovian Malware C\&C on Twitter}
-\author{Maxime Augier}
+\author{Maxime Augier and Ramasamy Gowthami}
 
 \begin{document}
 
 \maketitle
 
+
+
+\section{Motivation}
+
 C\&C, short for Command-and-Control, is the infrastructure used by a Botnet (a network of hosts compromised by malicious software) to receive
 commands and otherwise communicate with the owners of the malicious software. It is often the most critical part of a malware system; disabling it or taking it over can make a whole botnet self-destruct or become ineffective.
 
-Consequently, C\&C channels have been the subject of a technological race between malware writers and defenders, the former resorting to more and more sophisticated techniques to avoid detection and disabling.
+Consequently, C\&C channels have been the subject of a technological race between malware writers and defenders, the former resorting to more and more sophisticated techniques to avoid detection and disabling. Early typical choices for C\&C were semi-private IRC channels on open IRC networks; recent alternatives include techniques like DNS fast flux, where the attacker keep registering new domain names as contact points, so that blocking or sinkholing domains becomes an ineffective defense.
 
-Twitter is a good candidate for such a C\&C channel: An administrator cannot block \url{twitter.com} without possibly alienating users. However, because existing botnets use encrypted, robot-looking messages, they can easily be distinguished from legitimate tweets, and defenders could try to detect and block that.
+Twitter is a good candidate for such a C\&C channel: An administrator cannot block \url{twitter.com} without possibly alienating users, and C\&C traffic becomes harder to distinguish from legitimate web browsing. Account registration is not required to have read access to tweets, and the hashtag mechanism, akin to IRC channels, can be used to subscribe to control messages without forcing the botnet owner to tie himself to a single account. 
+
+They have been historical cases of known botnets using Twitter for C\&CHowever, because they used encrypted, robot-looking messages, they can easily be distinguished from legitimate tweets, and defenders could try to detect and block that.
 
 The aim of the project is to determine how easy and realistic would it be to build an innocuous-looking C\&C channel, by using simple language models such as Markov chains, to masquerade control messages as human utterances; and try to detect occurrences of such behaviour in the wild, by looking for messages that fit an artificial language model particularily well.
 
-First step would be to use an existing corpus of Twitter messages to build a simple Markov model. Then, we must estimate how much entropy one can fit in a single tweet with such a model, with the desired probability on commands. Lastly, we try to detect messages issued by such a model, for instance by looking for messages that have high output probability under a Markov model of depth $n$, but low probability under a model of depth $n+1$.
 
-the Twitter Stream as provided by \url{archive.org} is roughly 50GB per month. Using as many months as we can afford will give us a more accurate model. I don't know yet if this can be achieved with existing software out-of-the-box, but I look forward to learning that in class. This looks suitable for MapReduce-style computations.
+\section{Project steps}
 
-I've been considering working on that alone for a while, but if that can be turned into a team project with one another person, it might give me the motivation needed to go forward!
+\paragraph{Data collection}
+
+The first step will be to setup data collection so that we can have access to a large corpus of Twitter messages. We hope this part of the work can be shared with the other groups working on Twitter-related projects. This step should produce a collection of tweets, optionally with some metadata, in a structured format, and if possible, stored in HDFS or other database suitable for parallel processing.
+
+If access to such a collection infrastructure, we can fall back on the stream provided at \url{https://archive.org/details/twitterstream}. This will probably be sufficient to build good language models, but has probably very low chances of containing detectable suspicious messages.
+
+\paragraph{Early assessment}
+
+Before looking into Markovian-encoded messages, we should start looking for more naive encodings, just in case. We will look for telltalle signs of base64-encoded messages, or other seemingly compressed formats.
+
+\paragraph{Language classification}
+
+Before trying to apply any language model, we will try to tag our messages with one of the readily available language recognition frameworks. Later on, our work will cover two separate corpuses, the full one and the one consisting of English-only languages.
+
+\paragraph{Model building}
+
+MapReduce is especially well fitted to compute the probability distributions over a Markov model. We will compute our models both on letters (n-grams) and tokenized words (for the english corpus only). We also need to test several tokenization models.
+
+\paragraph{Channel building}
+
+We propose to use an inverted form of Huffman coding to encode arbitrary bits into human-looking chains. The algorith wil work as follows:
+
+First, prune the model to keep it down to a reasonable size, by excluding uncommon words.
+
+Then, for every state in the chain, build a Huffman tree over the distribution for the next symbol.
+
+To encode, begin with an empty starting state in the Markov chain. Perform a Huffman decoding operation on the tree of the current state, which will consume an arbitrary number of bits and produce a symbol. Output the symbol, compute the new state, and repeat until no bits are left, or the chain picks a terminating symbol, or the maximum output size is exceeded.
+
+To decode, begin with the same empty state; for each token encoutered, perform Huffmann compression, repeat until the message is complete.
+
+\paragraph{Entropy estimation}
+
+Once the encoding channel is working, we shall make it run with random input bits, and measure on average how many bits fit in each tweet, for all our models (n-grams, english n-grams, english words). Combined with compression, we will estimate how many messages would be required for typical C\&C operations, checking in how many bits we can fit (for instance) a DDoS attack target or a typical shady url.
+
+\paragraph{Detection}
+
+The difficult part will be extracting suspicious messages conforming too well to our model. 
+
+One first technique will be to use different Markov models of different orders, and see if for given accounts, their distribution of tweets follows a low-order model anormally better than a high-order one.
+
+We will also use the n-gram table to compute likelihood for a set of hashtags, and try to extract randomly-generated hashtags from it. We will apply the same n-gram analysis to messages contents, and compare with the first naive regex-based classifier.
+
+\section{Resource usage}
+
+If we can get 
+
+\section{Milestones}
+
+\begin{description}
+	\item[29.03.2014] Have a sample set of data ready in case the global collection effort does not work (MA), write a MapReduce implementation to build n-gram datasets (RG)
+	\item[12.04.2014] Results from early assessment and detection
+	\item[26.04.2014] Proof of concept for stealthy channel, compressor/decompressor sample code
+	\item[10.05.2014] Integrate final data sources and start looking for actual bots
+	\item[31.05.2014] Final report 
+\end{description}
 
 \end{document}
