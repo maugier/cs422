@@ -3,7 +3,7 @@
 \usepackage{url}
 
 \title{CS422 Project Proposal: Searching for Markovian Malware C\&C on Twitter}
-\author{Maxime Augier and Ramasamy Gowthami}
+\author{Maxime Augier and Gowthami Ramasamy}
 
 \begin{document}
 
@@ -45,6 +45,8 @@ Before trying to apply any language model, we will try to tag our messages with 
 
 MapReduce is especially well fitted to compute the probability distributions over a Markov model. We will compute our models both on letters (n-grams) and tokenized words (for the english corpus only). We also need to test several tokenization models.
 
+Another option we want to consider (but less likely to give results) is encoding messages in deliberate grammar or orthography mistakes, trough permutation of simple characters. Decoding would be performed by a standard spell checker like aspell.
+
 \paragraph{Channel building}
 
 We propose to use an inverted form of Huffman coding to encode arbitrary bits into human-looking chains. The algorith wil work as follows:
@@ -71,14 +73,16 @@ We will also use the n-gram table to compute likelihood for a set of hashtags, a
 
 \section{Resource usage}
 
-If we can get 
+As much as we can get.
+
+Maxime can provide storage space and compute time on LACAL clusters for low-priority jobs, can be used in case of backups. We'll have to see if it's not too costly to replicate from the common Twitter data source.
 
 \section{Milestones}
 
 \begin{description}
-	\item[29.03.2014] Have a sample set of data ready in case the global collection effort does not work (MA), write a MapReduce implementation to build n-gram datasets (RG)
+	\item[29.03.2014] Have a sample set of data ready in case the global collection effort does not work (MA), write a MapReduce implementation to build n-gram datasets (GR). Write MapReduce simple matchers (MA).
 	\item[12.04.2014] Results from early assessment and detection
-	\item[26.04.2014] Proof of concept for stealthy channel, compressor/decompressor sample code
+	\item[26.04.2014] Proof of concept for stealthy channel, MapReduce chain trimmer (GR), compressor/decompressor sample code (MA)
 	\item[10.05.2014] Integrate final data sources and start looking for actual bots
 	\item[31.05.2014] Final report 
 \end{description}
