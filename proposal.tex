@@ -1,0 +1,25 @@
+\documentclass[a4paper,11pt]{article}
+
+\title{CS422 Project Proposal: Searching for Markovian Malware C\&C on Twitter}
+\author{Maxime Augier}
+
+\begin{document}
+
+\maketitle
+
+C\&C, short for Command-and-Control, is the infrastructure used by a Botnet (a network of hosts compromised by malicious software) to receive
+commands and otherwise communicate with the owners of the malicious software. It is often the most critical part of a malware system; disabling it or taking it over can make a whole botnet self-destruct or become ineffective.
+
+Consequently, C\&C channels have been the subject of a technological race between malware writers and defenders, the former resorting to more and more sophisticated techniques to avoid detection and disabling.
+
+Twitter is a good candidate for such a C\&C channel: An administrator cannot block \url{twitter.com} without possibly alienating users. However, because existing botnets use encrypted, robot-looking messages, they can easily be distinguished from legitimate tweets, and defenders could try to detect and block that.
+
+The aim of the project is to determine how easy and realistic would it be to build an innocuous-looking C\&C channel, by using simple language models such as Markov chains, to masquerade control messages as human utterances; and try to detect occurrences of such behaviour in the wild, by looking for messages that fit an artificial language model particularily well.
+
+First step would be to use an existing corpus of Twitter messages to build a simple Markov model. Then, we must estimate how much entropy one can fit in a single tweet with such a model, with the desired probability on commands. Lastly, we try to detect messages issued by such a model, for instance by looking for messages that have high output probability under a Markov model of depth $n$, but low probability under a model of depth $n+1$.
+
+the Twitter Stream as provided by \url{archive.org} is roughly 50GB per month. Using as many months as we can afford will give us a more accurate model. I don't know yet if this can be achieved with existing software out-of-the-box, but I look forward to learning that in class. This looks suitable for MapReduce-style computations.
+
+I've been considering working on that alone for a while, but if that can be turned into a team project with one another person, it might give me the motivation needed to go forward!
+
+\end{document}
