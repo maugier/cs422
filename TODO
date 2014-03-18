@@ -1,0 +1,40 @@
+
+Summary
+=======
+
+- Build n-gram table
+- Reduce n-gram table
+- Write encoder/decoder
+- Look for b64 tweets
+- Look for homographic attack in tweets
+- Encode data in orthography mistakes ?
+
+
+
+Building n-gram table
+=====================
+
+Input: MR collection, keys irrelevant, values are tweet texts.
+
+
+Build ngram: split last head or not ?
+
+  With split:
+
+  	Mapper: for every value (tweet), split the string il all possible substrings of length n.
+
+  	For every such substring, emit(init, last) where last is the last character of the substring and init is all but the last.
+
+  	Reducer: compute a histogram over the values. 
+
+  Without split:
+
+   	Mapper: for every value, split the string as before
+
+	For every substring, emit the substring as key, 1 as the value
+
+	Reducer: sum the values
+
+
+
+
