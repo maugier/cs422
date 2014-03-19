@@ -8,6 +8,9 @@ import sys
 
 (good,bad,empty) = (0,0,0)
 
+if sys.hexversion < 0x03030000:
+    print("WARNING: this code is known to fail for python < 3.3", file=sys.stderr)
+
 def open(tarname):
         """Opens a tar file containing bzip2-compressed chunks of lines containing
         JSON objects.
