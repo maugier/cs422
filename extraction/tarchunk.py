@@ -9,6 +9,15 @@ import sys
 (good,bad,empty) = (0,0,0)
 
 def open(tarname):
+        """Opens a tar file containing bzip2-compressed chunks of lines containing
+        JSON objects.
+
+        Use as an iterator, like this:
+
+        for obj in tarchunk.open("blah.tar"):
+            print o['text']
+             
+        """
         global good, bad
         tar = tarfile.open(tarname, mode='r|*')
 
@@ -21,7 +30,7 @@ def open(tarname):
                         continue
 
                 for line in bz2.open(obj):
-                    yield json.loads(line.decode('ascii'))
+                    yield json.loads(line.decode('utf8'))
                 
                 good += 1
 
