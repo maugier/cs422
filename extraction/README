@@ -21,8 +21,11 @@ Contents
     test script for the previous program, which will just report chunk
     sizes on stdout
 
+* save.sh
+    To be used with send-chunks.py. Will gzip the chunks and save them to an output directory (adjust for location). 
+
 * hdfs-remote-upload.sh
-        script that will bzip2 the chunks and put them to a 
+        script that will gzip the chunks and put them to a 
         remote hdfs store over SSH. Adjust with needed server name. Do not
         forget to setup automatic logins, key agents, and *socket multiplexing*
         if you want this to be useable. 
