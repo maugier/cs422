@@ -16,14 +16,12 @@ args = parser.parse_args()
 count = 0;
 chunk = 0;
 
-splitCount = 1000000
-
 def alltweets():
     for tf in args.files:
         yield from tarchunk.open(tf, nojson=True)
                 
 count = 0
-for chunk in chunked(alltweets(), size=splitCount):
+for chunk in chunked(alltweets(), size=args.size):
     p = subprocess.Popen([args.command, str(count).zfill(5)],
                          stdin=subprocess.PIPE, )
     for line in chunk:
