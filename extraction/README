@@ -1,19 +1,31 @@
-chunked.py : generic function for chunking an iterator
 
-tarchunk.py : library for working with Archive.org's provided tweet archives.
+Contents
+========
+
+* chunked.py
+    generic function for chunking an iterator
+
+* tarchunk.py
+          library for working with Archive.org's provided tweet archives.
 	      allows to stream objects or JSON strings from the packed archive
 	      with minimal memory use.
 
-tar2mongo.py : upload the tweet archive to a MongoDB database
+* tar2mongo.py
+          upload the tweet archive to a MongoDB database
 
-send-chunks.py : uncompress the data and split it into chunks of an arbitrary
-                 number of lines, and invoke a shell script for each chunk
+* send-chunks.py
+            uncompress the data and split it into chunks of an arbitrary
+            number of lines, and invoke a shell script for each chunk
 
-test.sh : test script for the previous program, which will just report chunk
-          sizes on stdout
+* test.sh 
+    test script for the previous program, which will just report chunk
+    sizes on stdout
 
-hdfs-remote-upload.sh : script that will bzip2 the chunks and put them to a 
-                        remote hdfs store over SSH
+* hdfs-remote-upload.sh
+        script that will bzip2 the chunks and put them to a 
+        remote hdfs store over SSH. Adjust with needed server name. Do not
+        forget to setup automatic logins, key agents, and *socket multiplexing*
+        if you want this to be useable. 
 
 
 
