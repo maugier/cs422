@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/json-lib-2.4-jdk15.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-io-2.4-bin/commons-io-2.4/commons-io-2.4-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-io-2.4-bin/commons-io-2.4/commons-io-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-lang3-3.3.1-bin/commons-lang3-3.3.1/commons-lang3-3.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-lang3-3.3.1-bin/commons-lang3-3.3.1/commons-lang3-3.3.1-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/org.json-20120521.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
