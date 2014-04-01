@@ -1,0 +1,1 @@
+hadoop jar /opt/hadoop/hadoop/contrib/streaming/*.jar -file /export/home/team16/stream/lc/mapper.py -mapper /export/home/team16/stream/lc/mapper.py -file /export/home/team16/stream/lc/reducer.py -reducer /export/home/team16/stream/lc/reducer.py -combiner /export/home/team16/stream/lc/reducer.py -input /team16/tweets/* -output /team16/langcount -numReduceTasks 10
