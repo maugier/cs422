@@ -25,12 +25,14 @@ public class JsonParsing {
 	    private Text word = new Text();
 	        
 	    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-	        String line = value.toString();
-	        StringTokenizer tokenizer = new StringTokenizer(line);
-	        while (tokenizer.hasMoreTokens()) {
-	            word.set(tokenizer.nextToken());
-	            context.write(word, one);
-	        }
+	       
+	    	String[] tmp=  value.toString().split("(?<=\\G.{3})");
+	    	
+	    	for(String x: tmp)
+	    	{
+	    		word.set(x);
+	    		context.write(word, one);
+	    	}
 	    }
 	}
 	
@@ -43,8 +45,7 @@ public class JsonParsing {
 		            sum += val.get();
 		        }
 		        context.write(key, new IntWritable(sum));
-		        context.write(key, new IntWritable(sum));
-		    }
+		        }
 		 }
 	 
 	public static void main(String[] args) throws Exception 
@@ -54,38 +55,25 @@ public class JsonParsing {
 		HashMap<BigInteger, String> textMap = new HashMap<BigInteger, String>();
 
 		while(input.hasNext()) {
-		    //or to process line by line
 		    String nextLine = input.nextLine();
 		    JSONObject jsonObj = new JSONObject(nextLine);
+		    OutputStream fos = new FileOutputStream("input.txt");
+		    ObjectOutputStream outputStream = new ObjectOutputStream(fos);
 		    
 		    if (jsonObj.has("lang") && jsonObj.get("lang").equals("en"))
 		    {
 		    	Object  value= jsonObj.get("text");
 		    	textMap.put(BigInteger.valueOf( (long) jsonObj.get("id")), value.toString());
-		    	
 		    }
 		    
-		    
-		    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("input.txt", true)));
-		    //out.println("the text");
-		    //out.close();
-		    
-		   for (BigInteger key: textMap.keySet())
+		    for (BigInteger key: textMap.keySet())
 		   {
-			  /* System.out.print("Key :" + key.toString());
-			   System.out.println("      Text :" + textMap.get(key).toString());*/
-			   out.print(key);
-			   out.print(textMap.get(key).toString());
-			  
+			outputStream.writeBytes(textMap.get(key).toString());
+			outputStream.writeBytes("\n");
 			   }
-		   out.close();
-		   
-		   /*File mapperfile = new File("input.txt");
-		   FileOutputStream f = new FileOutputStream(mapperfile);  
-		   ObjectOutputStream s = new ObjectOutputStream(f); 
-		   s.writeObject(textMap);
-		   s.close();*/
-    }
+		  fos.close();
+		  
+		}
 		input.close();
 		System.out.println("donee!");
 		
@@ -107,9 +95,5 @@ public class JsonParsing {
 	        
 	    job.waitForCompletion(true);
 	    
-	    
-		
-		}
-	
-
-}
+	    }
+	}
