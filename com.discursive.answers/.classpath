@@ -8,5 +8,14 @@
 	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-lang3-3.3.1-bin/commons-lang3-3.3.1/commons-lang3-3.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-lang3-3.3.1-bin/commons-lang3-3.3.1/commons-lang3-3.3.1-javadoc.jar"/>
 	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/org.json-20120521.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/hadoop-core-0.20.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-logging-1.1.3/commons-logging-1.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-logging-1.1.3/commons-logging-1.1.3-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-logging-1.1.3/commons-logging-1.1.3-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-logging-1.1.3/commons-logging-1.1.3-tests.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-logging-1.1.3/commons-logging-1.1.3-test-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-logging-1.1.3/commons-logging-adapters-1.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-logging-1.1.3/commons-logging-api-1.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="G:/Education/Hadoop/commons-logging-1.1.3/commons-logging-tests.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
