@@ -1,0 +1,1 @@
+hadoop jar /opt/hadoop/hadoop/contrib/streaming/*.jar -file "$PWD/mapper.py" -mapper "$PWD/mapper.py" -file "$PWD/reducer.py" -reducer "$PWD/reducer.py"  -input /team16/tweets/* -output /team16/tweets-dna -numReduceTasks 1 -D mapred.output.compress=true -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec
