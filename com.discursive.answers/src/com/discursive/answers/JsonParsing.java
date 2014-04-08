@@ -58,7 +58,7 @@ public class JsonParsing {
 		    String nextLine = input.nextLine();
 		    JSONObject jsonObj = new JSONObject(nextLine);
 		    OutputStream fos = new FileOutputStream("input.txt");
-		    ObjectOutputStream outputStream = new ObjectOutputStream(fos);
+		    PrintStream outputStream = new PrintStream(fos);
 		    
 		    if (jsonObj.has("lang") && jsonObj.get("lang").equals("en"))
 		    {
@@ -68,8 +68,7 @@ public class JsonParsing {
 		    
 		    for (BigInteger key: textMap.keySet())
 		   {
-			outputStream.writeBytes(textMap.get(key).toString());
-			outputStream.writeBytes("\n");
+			outputStream.println(textMap.get(key));
 			   }
 		  fos.close();
 		  
