@@ -23,7 +23,8 @@ if __name__ == "__main__":
         tweet = json.loads(line)
         e = entropy(tweet['text'])
         e2 = int(e * 1000)
-        bins[e2] = 1 + bins.get(e2,0)
+        lang = tweet['lang']
+        bins[(lang,e2)] = 1 + bins.get((lang,e2),0)
 
     except KeyError:
         continue
@@ -32,4 +33,4 @@ if __name__ == "__main__":
         # json decoding failed ?
         continue
   for (k,v) in bins.iteritems():
-    print("%s\t%s" % (k,v))
+    print("%s/%s\t%s" % (k[0],k[1],v))
