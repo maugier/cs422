@@ -2,10 +2,12 @@ package com.discursive.answers;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.conf.Configuration;
@@ -16,6 +18,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsonParsing {
@@ -25,14 +28,26 @@ public class JsonParsing {
 	    private Text word = new Text();
 	        
 	    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-	       
-	    	String[] tmp=  value.toString().split("(?<=\\G.{3})");
-	    	
-	    	for(String x: tmp)
-	    	{
-	    		word.set(x);
-	    		context.write(word, one);
-	    	}
+			
+	    	String input = value.toString();
+	    	HashMap<BigInteger, String> textMap = new HashMap<BigInteger, String>();
+			    JSONObject jsonObj;
+			    Object text="";
+				try {
+					jsonObj = new JSONObject(input);
+					 if (jsonObj.has("lang") && jsonObj.get("lang").equals("en"))
+					    {
+					    	text= jsonObj.get("text");
+					    	textMap.put(BigInteger.valueOf( (long) jsonObj.get("id")), text.toString());
+					    	for(int i=0;i<text.toString().length()-2;i++)
+							  {
+							  context.write((new Text(text.toString().substring(i,i+3))), one);
+							  }
+					    }
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	    }
 	}
 	
@@ -50,6 +65,8 @@ public class JsonParsing {
 	 
 	public static void main(String[] args) throws Exception 
 	{
+<<<<<<< HEAD
+=======
 		InputStream file =  new FileInputStream("G://Education/Android/com.discursive.answers/sample_one.txt");
 		Scanner input = new Scanner(file);
 		HashMap<BigInteger, String> textMap = new HashMap<BigInteger, String>();
@@ -76,6 +93,7 @@ public class JsonParsing {
 		input.close();
 		System.out.println("donee!");
 		
+>>>>>>> 95dd14fe9a7c1c462e9681a987ce81176ad3449f
 		 Configuration conf = new Configuration();
 	        
 	        Job job = new Job(conf, "n-gram count");
