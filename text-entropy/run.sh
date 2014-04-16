@@ -1,1 +1,1 @@
-hadoop jar /opt/hadoop/hadoop/contrib/streaming/*.jar -file "$PWD/mapper.py" -mapper "$PWD/mapper.py" -file "$PWD/reducer.py" -reducer "$PWD/reducer.py"  -input /team16/tweets/* -output /team16/tweets-entropy -numReduceTasks 1 
+hadoop jar /opt/hadoop/hadoop/contrib/streaming/*.jar -D mapred.job.name="Text Entropy per lang" -file "$PWD/mapper.py" -mapper "$PWD/mapper.py" -file "$PWD/reducer.py" -reducer "$PWD/reducer.py"  -input /team16/tweets/* -output /team16/tweets-entropy -numReduceTasks 1 
