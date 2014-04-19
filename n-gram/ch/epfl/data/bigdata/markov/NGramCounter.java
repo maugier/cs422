@@ -18,7 +18,7 @@ public class NGramCounter {
 
         private final static IntWritable one = new IntWritable(1);
 
-        private static final int NGRAM_LENGTH = 3;
+        private static int NGRAM_LENGTH = 3;
         
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -39,6 +39,13 @@ public class NGramCounter {
     }
 
     public static void main(String[] args) throws Exception {
+        
+        if (args.length != 3) {
+            throw new Exception("Parameters expected: <input path> <output path> <ngram length>");
+        }
+        
+        Map.NGRAM_LENGTH = Integer.parseInt(args[2]);
+        
         Configuration conf = new Configuration();
 
         Job job = Job.getInstance(conf);
@@ -60,6 +67,7 @@ public class NGramCounter {
         job.setNumReduceTasks(80);
         
         job.waitForCompletion(true);
+        
 
     }
 }
