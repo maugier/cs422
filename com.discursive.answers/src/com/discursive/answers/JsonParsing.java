@@ -65,35 +65,6 @@ public class JsonParsing {
 	 
 	public static void main(String[] args) throws Exception 
 	{
-<<<<<<< HEAD
-=======
-		InputStream file =  new FileInputStream("G://Education/Android/com.discursive.answers/sample_one.txt");
-		Scanner input = new Scanner(file);
-		HashMap<BigInteger, String> textMap = new HashMap<BigInteger, String>();
-
-		while(input.hasNext()) {
-		    String nextLine = input.nextLine();
-		    JSONObject jsonObj = new JSONObject(nextLine);
-		    OutputStream fos = new FileOutputStream("input.txt");
-		    PrintStream outputStream = new PrintStream(fos);
-		    
-		    if (jsonObj.has("lang") && jsonObj.get("lang").equals("en"))
-		    {
-		    	Object  value= jsonObj.get("text");
-		    	textMap.put(BigInteger.valueOf( (long) jsonObj.get("id")), value.toString());
-		    }
-		    
-		    for (BigInteger key: textMap.keySet())
-		   {
-			outputStream.println(textMap.get(key));
-			   }
-		  fos.close();
-		  
-		}
-		input.close();
-		System.out.println("donee!");
-		
->>>>>>> 95dd14fe9a7c1c462e9681a987ce81176ad3449f
 		 Configuration conf = new Configuration();
 	        
 	        Job job = new Job(conf, "n-gram count");
