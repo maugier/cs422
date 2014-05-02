@@ -27,13 +27,11 @@ public class NGramCounter {
 
         private final static IntWritable one = new IntWritable(1);
 
-        //private static int NGRAM_LENGTH = 3;
         
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         	String input = value.toString();
-	    	//HashMap<BigInteger, String> textMap = new HashMap<BigInteger, String>();
-	    	
+
 			    JSONObject jsonObj;
 			    Object text="";
             try {
@@ -41,19 +39,14 @@ public class NGramCounter {
             	jsonObj = new JSONObject(input);
                                 
                 if (jsonObj.has("lang") && jsonObj.get("lang").equals("en")) {
-                   /* int stop = tweet.text.length() - NGRAM_LENGTH + 1;
-                    for (int i = 0; i < stop; i++) {
-                        context.write((new Text(tweet.text.substring(i, i + NGRAM_LENGTH))), one);
-                    }*/
-                	
-					jsonObj = new JSONObject(input);
+    					jsonObj = new JSONObject(input);
 					 {
 					    	text= jsonObj.get("text");
-					    	//textMap.put(BigInteger.valueOf( (long) jsonObj.get("id")), text.toString());
-					    	String[] a = text.toString().split("\\s+"); 
+					    	String[] a = text.toString().split("\\s+");
+					    	
 					    	for(int i=0;i<a.length;i++)
 							  {
-					    		context.write((new Text(a[i])), one);
+					    		context.write((new Text(a[i].replaceAll("([\\-.,@!:;+$#=?&%*|_\\[\\]\\\\\\/\\'s$\\)\\(\\\"])",""))), one);
 							  }
 					    }
 				
@@ -65,19 +58,9 @@ public class NGramCounter {
     }
 
     public static void main(String[] args) throws Exception {
-        
-      /*  if (args.length != 3) {
-            throw new Exception("Parameters expected: <input path> <output path> <ngram length>");
-        }*/
-        
-        //Map.NGRAM_LENGTH = Integer.parseInt(args[2]);
-        
+
         Configuration conf = new Configuration();
-
-        //Job job = Job.getInstance(conf);
         Job job = new Job(conf, "n-gram count");
-        //job.setJobName("n-gram count");
-
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
 
