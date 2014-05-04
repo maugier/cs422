@@ -1,6 +1,7 @@
 \documentclass[a4paper,11pt]{article}
 
 \usepackage{url}
+\usepackage{graphicx}
 
 \title{CS422 Project: Searching for Markovian Malware C\&C on Twitter}
 \author{Maxime Augier and Gowthami Ramasamy}
@@ -13,17 +14,49 @@
 
 \section{Project steps}
 
-\paragraph{Data collection}
+\subsection{Data collection}
 
 We used the archive.org twitter stream and uploaded it to the lab cluster hdfs. The original file is a tar archive containing bzipped fragments of text files. The chunks were small, in the order of 1.5MB, so we repacked them into bigger chunk. After repacking gzip compression was used. Although the gzip format is inferior as it does not allow to seek within the file, bzip2 compression is significantly slower. One could also have concatenated the bzip fragments by fiddling with the headers but we preferred the safe approach.
 
 For this operation we used the python code under the ``extraction'' directory. It offers a generator-based API to process the tweets. There is also a script to upload data to a MongoDB instance.
 
-\paragraph{Early assessment}
+\subsection{Early assessment}
 
 Using Java MapReduce jobs proved extremely troublesome. The Hadoop version available was rather obsolete (1.x) and much of the documentation available on the net referenced non-existing mechanisms. Not having administrator access restricted our options; in particular, inclusion of third-party libraries for json parsing was much more difficult than needed. We tried several approaches (fat jars, trickery with the configuration object) to no avail. In the end, it turned out to be much simpler to write jobs using the streaming API. We wrote jobs in Python, as the version installed on the machine already had all the desired libraries.
 
-Every tweet provided a language field, set by the preferences of the user. As a trial of the hadoop system, we counted the languages of our tweets. Results are in \ref{twperlang}
+Every tweet provided a language field, set by the preferences of the user. As a trial of the hadoop system, we counted the languages of our tweets. Results are in \ref{twperlang}.
+
+On the contents of every tweet, we computed the simple entropy of the message as a sequence of characters. Here is the CDF of entropy per tweet:
+
+(insert graph here)
+
+We suspected entropy might vary per language, and so plotted entropy variation against the language field in \ref{entropyperlang}.
+
+%\begin{figure}
+%\centering
+%\includegraphics{text-entropy/entropyPerLang.pdf}
+%\caption{Entropy distribution per language}
+%\label{entropyperlang}
+%\end{figure}
+
+There are a few ouliers above 6.6 where we suspected we might find interesting content. The language count for these tweets is reported in \ref{highentropyperlang}. It is not surprising that among these outliers are ideogram-based languages, Japanese and Chinese.
+
+\begin{table}
+\centering
+\begin{tabular}{|l|r||l|r|}
+\hline
+Lang & Count & Lang & Count \\
+\hline
+ja  & 2437 &  bg  &    2 \\
+zh  & 58 & th   &   1 \\
+en   &   12  & pa  &    1 \\
+de   &   9 &   he  &    1 \\
+ko    &  6 &  ar   &   1 \\
+vi   &   3 & & \\
+\hline
+\end{tabular}
+\caption{High Entropy Tweets per Language}
+\end{table}
 
 Recognizing base64 turned out to be harder than expected. Regex matching yielded a significant number of false positives.
 
@@ -32,13 +65,8 @@ We did, however, identify one odd pattern: sequences of nucleotids (ATGC letters
 We attempted to match base64-encoded data with the heuristic of attempting a base64 decode, then keeping only the messages for which there is at least one ascii letter. Unfortunately this also produced too many false positives.
 
 
-\paragraph{Entropy estimation}
 
-On the contents of every tweet, we computed the simple entropy of the message as a sequence of characters. Here is the CDF of entropy per tweet:
-
-(insert graph here)
-
-\paragraph{Model building}
+\subsection{Model building}
 
 MapReduce is especially well fitted to compute the probability distributions over a Markov model. We will compute our models both on letters (n-grams) and tokenized words (for the english corpus only). We also need to test several tokenization models.As a part of n-gram model and tokenized words, a MapReduce program has been developed, the logic of the model follows
 \begin{flushleft}
