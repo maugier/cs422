@@ -23,6 +23,8 @@ For this operation we used the python code under the ``extraction'' directory. I
 
 Using Java MapReduce jobs proved extremely troublesome. The Hadoop version available was rather obsolete (1.x) and much of the documentation available on the net referenced non-existing mechanisms. Not having administrator access restricted our options; in particular, inclusion of third-party libraries for json parsing was much more difficult than needed. We tried several approaches (fat jars, trickery with the configuration object) to no avail. In the end, it turned out to be much simpler to write jobs using the streaming API. We wrote jobs in Python, as the version installed on the machine already had all the desired libraries.
 
+Every tweet provided a language field, set by the preferences of the user. As a trial of the hadoop system, we counted the languages of our tweets. Results are in \ref{twperlang}
+
 Recognizing base64 turned out to be harder than expected. Regex matching yielded a significant number of false positives.
 
 We did, however, identify one odd pattern: sequences of nucleotids (ATGC letters) in long strings. We found a couple of users tweeting these sequences as ``Human DNA pieces''. While we initially thought this may be a covert communication channel, the sequences we tested turned out to be genuine human DNA, present in the publicly-available BLAST nucleotid database.
@@ -41,39 +43,50 @@ On the contents of every tweet, we computed the simple entropy of the message as
 MapReduce is especially well fitted to compute the probability distributions over a Markov model. We will compute our models both on letters (n-grams) and tokenized words (for the english corpus only). We also need to test several tokenization models.As a part of n-gram model and tokenized words, a MapReduce program has been developed, the logic of the model follows
 \begin{flushleft}
 
-Mapper [n-gram]:
+\begin{description}
 
-Input: The twitter stream, without any pre-processing
+\item[Mapper (n-gram)]
 
-Functionality:  1. The twitter stream is parsed and the language field - 'Lang' 					and Tweet text 'Text' gets extracted.
+\begin{description}
+\item[Input]: The twitter stream, without any pre-processing
 
-				2. The language fields is used according to the model that we are 					build [full one or English only]
+\item[Functionality]: \begin{enumerate} 
+          \item The twitter stream is parsed and the language field - 'Lang'	and Tweet text 'Text' gets extracted.
+	\item The language fields is used according to the model that we are build [full one or English only]
+          \item The tweet text further parsed into n-grams, without elimination of any bytes.
+\end{enumerate}
 
-				3. The tweet text further parsed into n-grams, without elimination 				any bytes.
+\item[Output]: Each n-gram will be passed as a key to the reducer. The value is one. {n-gram, one}
+\end{description}
 
-Output: Each n-gram will be passed as a key to the reducer. The value is one. 
-		{n-gram, one}
+\item[Mapper (tokenized words)]:
 
-Mapper [tokenized words]:
+\begin{description}
+\item[Input]: The twitter stream, without any pre-processing
 
-Input: The twitter stream, without any pre-processing
+\item[Functionality]: \begin{enumerate}
+	\item  The twitter stream is parsed and the language field - 'Lang' and tweet text 'Text' gets extracted.
+	\item The language fields is used according to the model that we are build [full one or English only]
+	\item The tweet text further parsed into words, tweet texts always contains special characters,plural forms which should be eliminated. So regex pattern is used to extract only alpha-numeric characters
+\end{enumerate} 
 
-Functionality:	1. The twitter stream is parsed and the language field - 'Lang' 					and tweet text 'Text' gets extracted.
-
-				2. The language fields is used according to the model that we are 					build [full one or English only]
-				
-				3. The tweet text further parsed into words, tweet texts always 					contains special characters,plural forms which should be 							eliminated. So regex pattern is used to extract only alpha-numeric 				characters 
-
-Output: Each word will be passed as a key to the reducer. The value is one. 
+\item[Output]: Each word will be passed as a key to the reducer. The value is one. 
 		{word, one}
-				
-Reducer [same for n-gram and tokenized words]:
+			
+\end{description}
+	
+\item[Reducer (common to n-grams and tokens)]:
 
-Input: {Key, Value}
+\begin{description}
+\item[Input]: {Key, Value}
 
-Functionality: Count the Key
+\item[Functionality]: Count the Key
 
-Output: Key Count 
+\item[Output]: Key Count
+\end{description}
+
+\end{description}
+ 
 \end{flushleft}
 
 Another option we want to consider (but less likely to give results) is encoding messages in deliberate grammar or orthography mistakes, trough permutation of simple characters. Decoding would be performed by a standard spell checker like aspell.
@@ -117,66 +130,40 @@ We will also use the n-gram table to compute likelihood for a set of hashtags, a
 \section{Appendix A: results}
 
 \begin{table}
-\begin{tabular}{|l|r|}
+\centering
+\begin{tabular}{|l|r||l|r|}
 \hline
-en & 46324982 \\
-ja & 22399870 \\
-es & 15817824 \\
-id & 10970703 \\
-ar & 9368831 \\
-pt & 7189249 \\
-und & 3964165 \\
-tr & 3897656 \\
-fr & 2947715 \\
-ru & 2566648 \\
-tl & 1917014 \\
-ko & 1730077 \\
-th & 1664855 \\
-it & 1029948 \\
-nl & 1019123 \\
-de & 725735 \\
-vi & 572220 \\
-et & 498251 \\
-pl & 453255 \\
-sl & 429062 \\
-ht & 350093 \\
-sk & 263615 \\
-sv & 248050 \\
-lv & 209531 \\
-hu & 119744 \\
-bg & 115099 \\
-el & 111589 \\
-fi & 110380 \\
-da & 110267 \\
-lt & 82100 \\
-zh & 77609 \\
-no & 71175 \\
-fa & 69998 \\
-uk & 57837 \\
-he & 54388 \\
-ur & 37947 \\
-is & 35487 \\
-hi & 19889 \\
-ta & 8417 \\
-bn & 6140 \\
-ne & 5859 \\
-hy & 2828 \\
-ka & 2149 \\
-ml & 1159 \\
-te & 1071 \\
-pa & 892 \\
-bo & 746 \\
-si & 638 \\
-my & 634 \\
-iu & 505 \\
-gu & 492 \\
-kn & 444 \\
-km & 433 \\
-lo & 315 \\
-am & 196 \\
-chr & 184 \\
-dv & 146 \\
-or & 47 \\
+Lang & Count & Lang & Count \\
+\hline
+en & 46324982 &             lt & 82100 \\
+ja & 22399870 &             zh & 77609 \\
+es & 15817824 &             no & 71175 \\
+id & 10970703 &             fa & 69998 \\
+ar & 9368831 &                      uk & 57837 \\
+pt & 7189249 &                      he & 54388 \\
+und & 3964165 &             ur & 37947 \\
+tr & 3897656 &                      is & 35487 \\
+fr & 2947715 &                      hi & 19889 \\
+ru & 2566648 &                      ta & 8417 \\
+tl & 1917014 &                      bn & 6140 \\
+ko & 1730077 &                      ne & 5859 \\
+th & 1664855 &                      hy & 2828 \\
+it & 1029948 &                      ka & 2149 \\
+nl & 1019123 &                      ml & 1159 \\
+de & 725735 &                       te & 1071 \\
+vi & 572220 &                       pa & 892 \\
+et & 498251 &                       bo & 746 \\
+pl & 453255 &                       si & 638 \\
+sl & 429062 &                       my & 634 \\
+ht & 350093 &                       iu & 505 \\
+sk & 263615 &                       gu & 492 \\
+sv & 248050 &                       kn & 444 \\
+lv & 209531 &                       km & 433 \\
+hu & 119744 &                       lo & 315 \\
+bg & 115099 &                       am & 196 \\
+el & 111589 &                       chr & 184 \\
+fi & 110380 &                       dv & 146 \\
+da & 110267 &                       or & 47 \\
 \hline
 \end{tabular}
 \label{twperlang}
