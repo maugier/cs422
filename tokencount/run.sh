@@ -1,0 +1,1 @@
+hadoop jar /opt/hadoop/hadoop/contrib/streaming/*.jar -D mapred.job.name="Token table" -file "$PWD/mapper.py" -mapper "$PWD/mapper.py" -file "$PWD/reducer.py" -reducer "$PWD/reducer.py"  -combiner "$PWD/reducer.py" -input /team16/tweets/* -output /team16/tokens -numReduceTasks 80
