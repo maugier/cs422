@@ -12,6 +12,9 @@ for line in sys.stdin:
         x = json.loads(line)
         text = x['text']
 
+        #remove hashtags and handles
+        text = re.sub(r'\s[@#]\S+','',text)
+
         if not chk.match(text):
             continue
 
