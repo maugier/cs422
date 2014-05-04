@@ -21,13 +21,20 @@ For this operation we used the python code under the ``extraction'' directory. I
 
 \paragraph{Early assessment}
 
+Using Java MapReduce jobs proved extremely troublesome. The Hadoop version available was rather obsolete (1.x) and much of the documentation available on the net referenced non-existing mechanisms. Not having administrator access restricted our options; in particular, inclusion of third-party libraries for json parsing was much more difficult than needed. We tried several approaches (fat jars, trickery with the configuration object) to no avail. In the end, it turned out to be much simpler to write jobs using the streaming API. We wrote jobs in Python, as the version installed on the machine already had all the desired libraries.
+
 Recognizing base64 turned out to be harder than expected. Regex matching yielded a significant number of false positives.
 
 We did, however, identify one odd pattern: sequences of nucleotids (ATGC letters) in long strings. We found a couple of users tweeting these sequences as ``Human DNA pieces''. While we initially thought this may be a covert communication channel, the sequences we tested turned out to be genuine human DNA, present in the publicly-available BLAST nucleotid database.
 
-\paragraph{Language classification}
+We attempted to match base64-encoded data with the heuristic of attempting a base64 decode, then keeping only the messages for which there is at least one ascii letter. Unfortunately this also produced too many false positives.
 
-Before trying to apply any language model, we will try to tag our messages with one of the readily available language recognition frameworks. Later on, our work will cover two separate corpuses, the full one and the one consisting of English-only languages.
+
+\paragraph{Entropy estimation}
+
+On the contents of every tweet, we computed the simple entropy of the message as a sequence of characters. Here is the CDF of entropy per tweet:
+
+(insert graph here)
 
 \paragraph{Model building}
 
@@ -95,12 +102,6 @@ One first technique will be to use different Markov models of different orders, 
 
 We will also use the n-gram table to compute likelihood for a set of hashtags, and try to extract randomly-generated hashtags from it. We will apply the same n-gram analysis to messages contents, and compare with the first naive regex-based classifier.
 
-\section{Resource usage}
-
-As much as we can get.
-
-Maxime can provide storage space and compute time on LACAL clusters for low-priority jobs, can be used in case of backups. We'll have to see if it's not too costly to replicate from the common Twitter data source.
-
 \section{Milestones}
 
 \begin{description}
@@ -110,5 +111,76 @@ Maxime can provide storage space and compute time on LACAL clusters for low-prio
 	\item[06.05.2014] Integrate final data sources and start looking for actual bots
 	\item[13.05.2014] Final report 
 \end{description}
+
+\appendix
+
+\section{Appendix A: results}
+
+\begin{table}
+\begin{tabular}{|l|r|}
+\hline
+en & 46324982 \\
+ja & 22399870 \\
+es & 15817824 \\
+id & 10970703 \\
+ar & 9368831 \\
+pt & 7189249 \\
+und & 3964165 \\
+tr & 3897656 \\
+fr & 2947715 \\
+ru & 2566648 \\
+tl & 1917014 \\
+ko & 1730077 \\
+th & 1664855 \\
+it & 1029948 \\
+nl & 1019123 \\
+de & 725735 \\
+vi & 572220 \\
+et & 498251 \\
+pl & 453255 \\
+sl & 429062 \\
+ht & 350093 \\
+sk & 263615 \\
+sv & 248050 \\
+lv & 209531 \\
+hu & 119744 \\
+bg & 115099 \\
+el & 111589 \\
+fi & 110380 \\
+da & 110267 \\
+lt & 82100 \\
+zh & 77609 \\
+no & 71175 \\
+fa & 69998 \\
+uk & 57837 \\
+he & 54388 \\
+ur & 37947 \\
+is & 35487 \\
+hi & 19889 \\
+ta & 8417 \\
+bn & 6140 \\
+ne & 5859 \\
+hy & 2828 \\
+ka & 2149 \\
+ml & 1159 \\
+te & 1071 \\
+pa & 892 \\
+bo & 746 \\
+si & 638 \\
+my & 634 \\
+iu & 505 \\
+gu & 492 \\
+kn & 444 \\
+km & 433 \\
+lo & 315 \\
+am & 196 \\
+chr & 184 \\
+dv & 146 \\
+or & 47 \\
+\hline
+\end{tabular}
+\label{twperlang}
+\caption{Tweets per language}
+\end{table}
 
 \end{document}
