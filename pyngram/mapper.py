@@ -15,7 +15,7 @@ def collapse(s):
         if c == u' ':
             if not wasspace:
                 wasspace = True
-                yield c
+                yield '.'
         else:
             wasspace = False
             yield c
@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
         text = tweet['text']
 
-        tokens = ([u' '] * (NGRAM_LENGTH - 1)) + list(collapse(letter(c) for c in text)) + [u' ']
+        tokens = ([u'.'] * (NGRAM_LENGTH - 1)) + list(collapse(letter(c) for c in text)) + [u'.']
 
         while(len(tokens) >= NGRAM_LENGTH):
             print("%s\t1" % u''.join(tokens[0:NGRAM_LENGTH]).encode("utf8"))

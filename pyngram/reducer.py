@@ -13,12 +13,12 @@ for line in sys.stdin:
         if (w == word):
             sum += c
         else:
-            if word:     
+            if word is not None:     
                 print ("%s\t%s" % (word, sum));
             sum = c
             word = w
     except:
             continue
 
-if word:
+if word is not None:
     print ("%s\t%s" % (word,sum))
