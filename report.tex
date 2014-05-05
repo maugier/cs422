@@ -11,14 +11,29 @@
 \maketitle
 
 
+\subsection{Objectives}
 
-\section{Project steps}
+The main objective was to assess how realistic is it to use a Markov language model to build a stealthy control channel for malware, piggybacking on the Twitter service, and as a side effect, to study other anomalies of Twitter traffic.
+
+A botnet is typically employed to launch Denial-of-Service attacks on popular websites, then extorting protection money from the site
+owners. In its simplest form, a botnet command would consist of a target website, maybe a few control flags (3-5 bits) and an attack duration (to get a 5 minute granularity over 1 week, 11 bits are sufficient). According to the list of the 500 most popular domains available on \url{http://moz.com/top500/domains/csv}, the median length of a domain name is 14 characters and the 95th percentile is at 20. A domain name consists of the characters a-z, 0-9, dash and dot. With charater-wise encoding, and assuming characters in domain names are evenly distributed (quite a pessimistic assumption) we need 6 bits to per domain character, so 120 bits for a domain name, 136 after adding some control bits.
+
+We thus consider a control channel ``realistic'' if it can fit 136 bits in a single message.
+
+
+\subsection{Project setup}
+
+All the project code is available on github at \url{http://github.com/maugier/cs422.git}. 
 
 \subsection{Data collection}
 
-We used the archive.org twitter stream and uploaded it to the lab cluster hdfs. The original file is a tar archive containing bzipped fragments of text files. The chunks were small, in the order of 1.5MB, so we repacked them into bigger chunk. After repacking gzip compression was used. Although the gzip format is inferior as it does not allow to seek within the file, bzip2 compression is significantly slower. One could also have concatenated the bzip fragments by fiddling with the headers but we preferred the safe approach.
+As a starting point, we used a sample of the twitter stream archive provided on \url{http://archive.org}. The original file is a tar archive containing bzipped fragments of text files. The chunks were small, in the order of 1.5MB. In orded to ease the load on the cluster filesystem (millions of files is not a trivial thing) We repacked them into bigger chunks, of the order of 100M.
 
-For this operation we used the python code under the ``extraction'' directory. It offers a generator-based API to process the tweets. There is also a script to upload data to a MongoDB instance.
+For repacking, gzip compression was used. The bzip2 format is technically superior in that it allows almost-random access to the data, decoupling the chunks from the mapper jobs. However, bzip2 compression is significantly slower than gzip; we considered the time saved when repacking more important that the ability to scale the dataset to a bigger cluster on the spot. In theory, it would have been possible to merge the bzip2 chunks by playing header trickery, but we prefered the safe approach.
+
+For this operation we used the python code under the ``extraction'' directory. It offers a generator-based API to process the tweets. There is also a script to upload data to a MongoDB instance if needed (we ended up not using MongoDB at all for now).
+
+The repacked chunks were uploaded to the lab cluster HDFS under the /team16 directory, where they were made publically available for other teams. There are also /team16/tweets-small and /team16/tweets-tiny, which are subsets of the main dataset, and can be used for testing purposes.
 
 \subsection{Early assessment}
 
@@ -61,6 +76,8 @@ vi   &   3 & & \\
 Recognizing base64 turned out to be harder than expected. Regex matching yielded a significant number of false positives.
 
 We did, however, identify one odd pattern: sequences of nucleotids (ATGC letters) in long strings. We found a couple of users tweeting these sequences as ``Human DNA pieces''. While we initially thought this may be a covert communication channel, the sequences we tested turned out to be genuine human DNA, present in the publicly-available BLAST nucleotid database.
+
+
 
 We attempted to match base64-encoded data with the heuristic of attempting a base64 decode, then keeping only the messages for which there is at least one ascii letter. Unfortunately this also produced too many false positives.
 
