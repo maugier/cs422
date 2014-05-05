@@ -78,6 +78,12 @@ Recognizing base64 turned out to be harder than expected. Regex matching yielded
 We did, however, identify one odd pattern: sequences of nucleotids (ATGC letters) in long strings. We found a couple of users tweeting these sequences as ``Human DNA pieces''. While we initially thought this may be a covert communication channel, the sequences we tested turned out to be genuine human DNA, present in the publicly-available BLAST nucleotid database.
 
 
+It is straightforward to encode bytes into groups of four nucleotids. With the 140-character twitter limit we can accomodate 35 bytes, or 280 bits, enough for our target bound.
+
+For instance, assigning A,C,G,T the values 0,1,2,3, and writing every ascii value in base 4, lsb first, we can encode www.facebook.com as ``CTCTCTCTCTCTGTGACGCGCGACCGATCGCCCGAGCGTTCGTTCGGTGTGACGATCGTTCGTC''. Unfortunately this is not a very good disguise, as such a code
+would exhibit strong self-correlation of order 2, where for actual genetic data an order 3 would be expected. This could be improved
+by compressing or encrypting the data with a very simple scheme prior to encoding.
+
 
 We attempted to match base64-encoded data with the heuristic of attempting a base64 decode, then keeping only the messages for which there is at least one ascii letter. Unfortunately this also produced too many false positives.
 
