@@ -36,6 +36,10 @@ if __name__ == "__main__":
         if tweet['lang'] != u'en':
             continue
 
+        if text[0:3] == u'RT ':
+            continue
+
+
         text = tweet['text']
 
         tokens = ([u'.'] * (NGRAM_LENGTH - 1)) + list(collapse(letter(c) for c in text)) + [u'.']

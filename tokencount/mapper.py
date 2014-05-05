@@ -39,6 +39,8 @@ if __name__ == "__main__":
             continue
 
         text = tweet['text']
+        if text[0:3] == u'RT ':
+            continue
 
         #tokens = ([u'_NUL'] * (NGRAM_LENGTH - 1)) + list(tokenize(text)) + [u'_NUL']
         tokens = list(tokenize(text))
