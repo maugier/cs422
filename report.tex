@@ -27,7 +27,10 @@ All the project code is available on github at \url{http://github.com/maugier/cs
 
 \subsection{Data collection}
 
-As a starting point, we used a sample of the twitter stream archive provided on \url{http://archive.org}. The original file is a tar archive containing bzipped fragments of text files. The chunks were small, in the order of 1.5MB. In orded to ease the load on the cluster filesystem (millions of files is not a trivial thing) We repacked them into bigger chunks, of the order of 100M.
+As a starting point, we used a sample of the twitter stream archive provided on \url{http://archive.org}. The original file is a tar archive containing bzipped fragments of text files. The chunks were small, in the order of 1.5MB. In orded to ease the load on the cluster filesystem (millions of files is not a trivial thing) we decided repacked them into bigger chunks, of the order of 100M.
+
+In hindsight this was a bad decision; it would have been adequate if we were the only users of the machine, but on a shared system it would have been better to have more chunks of smaller size, as it would have decreased the granularity
+of the mapper jobs and made for a more fluid scheduling.
 
 For repacking, gzip compression was used. The bzip2 format is technically superior in that it allows almost-random access to the data, decoupling the chunks from the mapper jobs. However, bzip2 compression is significantly slower than gzip; we considered the time saved when repacking more important that the ability to scale the dataset to a bigger cluster on the spot. In theory, it would have been possible to merge the bzip2 chunks by playing header trickery, but we prefered the safe approach.
 
@@ -231,7 +234,8 @@ da & 110267 &                       or & 47 \\
 \end{table}
 
 \begin{table}
-\begin{ŧabular}{|l|r||l|r|}
+\centering
+\begin{tabular}{|l|r||l|r|}
 \hline
 5gram & count & 5gram & count \\
 \hline
