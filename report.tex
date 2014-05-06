@@ -153,6 +153,8 @@ MapReduce is especially well fitted to compute the probability distributions ove
 
 We hit several trivial (in hindsight) difficulties that required model tweaking, and thus a lot of redundant computations. For the trigrams, the most common word was ``RT'': it is used as a marker at the beginning of a tweet to tag retweets. Thus, the model would mostly build strings of the ``RT'' word repeated. The second most common word was ``http'' followed closely by ``https''. For tokens, we (arbitrarily) excluded hashtags and user handles.
 
+The top 5-grams for the english language are summarized in table \ref{5grams}.
+
 \paragraph{Entropy estimation}
 
 Once the encoding channel is working, we shall make it run with random input bits, and measure on average how many bits fit in each tweet, for all our models (n-grams, english n-grams, english words). Combined with compression, we will estimate how many messages would be required for typical C\&C operations, checking in how many bits we can fit (for instance) a DDoS attack target or a typical shady url.
@@ -164,16 +166,6 @@ The difficult part will be extracting suspicious messages conforming too well to
 One first technique will be to use different Markov models of different orders, and see if for given accounts, their distribution of tweets follows a low-order model anormally better than a high-order one.
 
 We will also use the n-gram table to compute likelihood for a set of hashtags, and try to extract randomly-generated hashtags from it. We will apply the same n-gram analysis to messages contents, and compare with the first naive regex-based classifier.
-
-\section{Milestones}
-
-\begin{description}
-	\item[01.04.2014] Have a sample set of data ready in case the global collection effort does not work (MA), write a MapReduce implementation to build n-gram datasets (GR). Write MapReduce simple matchers (MA).
-	\item[08.04.2014] Results from early assessment and detection
-	\item[22.04.2014] Proof of concept for stealthy channel, MapReduce chain trimmer (GR), compressor/decompressor sample code (MA)
-	\item[06.05.2014] Integrate final data sources and start looking for actual bots
-	\item[13.05.2014] Final report 
-\end{description}
 
 \appendix
 
@@ -236,6 +228,32 @@ da & 110267 &                       or & 47 \\
 \end{tabular}
 \label{twperlang}
 \caption{Tweets per language}
+\end{table}
+
+\begin{table}
+\begin{ŧabular}{|l|r||l|r|}
+\hline
+5gram & count & 5gram & count \\
+\hline
+.the. & 7233325 & ight. & 1943931 \\
+.you. & 6642536 & ....m & 1943566 \\
+....i & 4578163 & ....a & 1861019 \\
+.and. & 4160015 & .with & 1828758 \\
+...i. & 3186708 & .i.m. & 1815360 \\
+.for. & 2966322 & e.you & 1750457 \\
+....t & 2830670 & just. & 1735798 \\
+.that & 2691984 & .foll & 1724977 \\
+that. & 2569898 & with. & 1697451 \\
+ollow & 2305442 & ....w & 1657913 \\
+follo & 2303823 & .like & 1655889 \\
+....s & 2291588 & .your & 1654147 \\
+.just & 2044528 & .love & 1630010 \\
+.this & 2039137 & .have & 1627986 \\
+this. & 2033897 & \\
+\hline
+\end{tabular}
+\caption{Top 5-grams for english language}
+\label{5grams}
 \end{table}
 
 \end{document}
