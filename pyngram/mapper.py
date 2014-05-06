@@ -38,6 +38,8 @@ if __name__ == "__main__":
 
         text = tweet['text']
 
+        text = re.sub(r'https?://\S*','', text)
+
         if text[0:3] == u'RT ':
             continue
 
