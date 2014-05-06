@@ -39,6 +39,11 @@ The repacked chunks were uploaded to the lab cluster HDFS under the /team16 dire
 
 Using Java MapReduce jobs proved extremely troublesome. The Hadoop version available was rather obsolete (1.x) and much of the documentation available on the net referenced non-existing mechanisms. Not having administrator access restricted our options; in particular, inclusion of third-party libraries for json parsing was much more difficult than needed. We tried several approaches (fat jars, trickery with the configuration object) to no avail. In the end, it turned out to be much simpler to write jobs using the streaming API. We wrote jobs in Python, as the version installed on the machine already had all the desired libraries.
 
+
+The streaming API wasn't free from oddities though. It appears using spaces as end markers for the trigrams wasn't a great idea, and
+actually caused the shuffle step to return inconsistent results. Everything went better after we switched to a printable character
+for the begin/end marker (the dot.)
+
 Every tweet provided a language field, set by the preferences of the user. As a trial of the hadoop system, we counted the languages of our tweets. Results are in \ref{twperlang}.
 
 On the contents of every tweet, we computed the simple entropy of the message as a sequence of characters. Here is the CDF of entropy per tweet:
@@ -80,7 +85,13 @@ We did, however, identify one odd pattern: sequences of nucleotids (ATGC letters
 
 It is straightforward to encode bytes into groups of four nucleotids. With the 140-character twitter limit we can accomodate 35 bytes, or 280 bits, enough for our target bound.
 
-For instance, assigning A,C,G,T the values 0,1,2,3, and writing every ascii value in base 4, lsb first, we can encode www.facebook.com as ``CTCTCTCTCTCTGTGACGCGCGACCGATCGCCCGAGCGTTCGTTCGGTGTGACGATCGTTCGTC''. Unfortunately this is not a very good disguise, as such a code
+For instance, assigning A,C,G,T the values 0,1,2,3, and writing every ascii value in base 4, lsb first, we can encode www.facebook.com as
+\begin{verbatim}
+CTCTCTCTCTCTGTGACGCGCGACCGATCGCC
+CGAGCGTTCGTTCGGTGTGACGATCGTTCGTC
+\end{verbatim}
+
+Unfortunately this is not a very good disguise, as such a code
 would exhibit strong self-correlation of order 2, where for actual genetic data an order 3 would be expected. This could be improved
 by compressing or encrypting the data with a very simple scheme prior to encoding.
 
@@ -140,19 +151,7 @@ MapReduce is especially well fitted to compute the probability distributions ove
  
 \end{flushleft}
 
-Another option we want to consider (but less likely to give results) is encoding messages in deliberate grammar or orthography mistakes, trough permutation of simple characters. Decoding would be performed by a standard spell checker like aspell.
-
-\paragraph{Channel building}
-
-We propose to use an inverted form of Huffman coding to encode arbitrary bits into human-looking chains. The algorith wil work as follows:
-
-First, prune the model to keep it down to a reasonable size, by excluding uncommon words.
-
-Then, for every state in the chain, build a Huffman tree over the distribution for the next symbol.
-
-To encode, begin with an empty starting state in the Markov chain. Perform a Huffman decoding operation on the tree of the current state, which will consume an arbitrary number of bits and produce a symbol. Output the symbol, compute the new state, and repeat until no bits are left, or the chain picks a terminating symbol, or the maximum output size is exceeded.
-
-To decode, begin with the same empty state; for each token encoutered, perform Huffmann compression, repeat until the message is complete.
+We hit several trivial (in hindsight) difficulties that required model tweaking, and thus a lot of redundant computations. For the trigrams, the most common word was ``RT'': it is used as a marker at the beginning of a tweet to tag retweets. Thus, the model would mostly build strings of the ``RT'' word repeated. The second most common word was ``http'' followed closely by ``https''. For tokens, we (arbitrarily) excluded hashtags and user handles.
 
 \paragraph{Entropy estimation}
 
@@ -177,6 +176,24 @@ We will also use the n-gram table to compute likelihood for a set of hashtags, a
 \end{description}
 
 \appendix
+
+\paragraph{Channel building}
+
+We propose to use an inverted form of Huffman coding to encode arbitrary bits into human-looking chains. The algorith wil work as follows:
+
+First, prune the model to keep it down to a reasonable size, by excluding uncommon words.
+
+Then, for every state in the chain, build a Huffman tree over the distribution for the next symbol.
+
+To encode, begin with an empty starting state in the Markov chain. Perform a Huffman decoding operation on the tree of the current state, which will consume an arbitrary number of bits and produce a symbol. Output the symbol, compute the new state, and repeat until no bits are left, or the chain picks a terminating symbol, or the maximum output size is exceeded.
+
+To decode, begin with the same empty state; for each token encoutered, perform Huffmann compression, repeat until the message is complete.
+
+\section{Future Work}
+
+Another option we want to consider (but less likely to give results) is encoding messages in deliberate grammar or orthography mistakes, trough permutation of simple characters. Decoding would be performed by a standard spell checker like aspell.
+
+
 
 \section{Appendix A: results}
 
