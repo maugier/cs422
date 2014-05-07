@@ -44,11 +44,16 @@ The streaming API wasn't free from oddities though. It appears using spaces as e
 actually caused the shuffle step to return inconsistent results. Everything went better after we switched to a printable character
 for the begin/end marker (the dot.)
 
-Every tweet provided a language field, set by the preferences of the user. As a trial of the hadoop system, we counted the languages of our tweets. Results are in \ref{twperlang}.
+Every tweet provided a language field, set by the preferences of the user. As a trial of the hadoop system, we counted the languages of our tweets. Results are in table \ref{twperlang}.
 
-On the contents of every tweet, we computed the simple entropy of the message as a sequence of characters. Here is the CDF of entropy per tweet:
+On the contents of every tweet, we computed the simple entropy of the message as a sequence of characters. The entropy per language is presented in figure \ref{entropy}.
 
-(insert graph here)
+\begin{figure}
+\centering
+\includegraphics{text-entropy/result.eps}
+\caption{Entropy distribution over tweets}
+\label{entropy}
+\end{figure}
 
 We suspected entropy might vary per language, and so plotted entropy variation against the language field in \ref{entropyperlang}.
 
