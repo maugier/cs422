@@ -49,13 +49,20 @@ for the begin/end marker (the dot.)
 
 Every tweet provided a language field, set by the preferences of the user. As a trial of the hadoop system, we counted the languages of our tweets. Results are in table \ref{twperlang}.
 
-On the contents of every tweet, we computed the simple entropy of the message as a sequence of characters. The entropy per language is presented in figure \ref{entropy}.
+On the contents of every tweet, we computed the simple entropy of the message as a sequence of characters. The entropy per language is presented in figures \ref{entropy} and \ref{entropycdf}.
 
 \begin{figure}
 \centering
-\includegraphics{text-entropy/result-cdf.eps}
-\caption{Entropy CDF over tweets}
+\includegraphics[scale=0.5]{text-entropy/result.eps}
+\caption{Entropy distribution over tweets}
 \label{entropy}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{text-entropy/result-cdf.eps}
+\caption{Entropy CDF over tweets}
+\label{entropycdf}
 \end{figure}
 
 We suspected entropy might vary per language, and so plotted entropy variation against the language field in \ref{entropyperlang}.
