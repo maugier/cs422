@@ -196,10 +196,13 @@ To encode, begin with an empty starting state in the Markov chain. Perform a Huf
 
 To decode, begin with the same empty state; for each token encoutered, perform Huffmann compression, repeat until the message is complete.
 
+Huffman compression can be replaced with arithmetic coding for improved performance, but Huffman was chosen for the first proof-of-concept for simplicity reasons.
+
 \section{Future Work}
 
 Another option we want to consider (but less likely to give results) is encoding messages in deliberate grammar or orthography mistakes, trough permutation of simple characters. Decoding would be performed by a standard spell checker like aspell.
 
+Replace Huffman coding with more general arithmetic coding
 
 
 \section{Appendix A: results}
