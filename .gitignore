@@ -1,0 +1,6 @@
+*.o
+*.class
+*.hi
+*.aux
+*.log
+*.pyc
