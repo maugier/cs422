@@ -1,5 +1,9 @@
 
 class Codec(object):
+    def __init__(self):
+        self.up = None
+        self.down = None
+
     def encode(self, clear):
         raise Exception("Not implemented")
 
@@ -13,10 +17,10 @@ class Codec(object):
         return CodecStack(upper, lower)
 
     def __lshift__(self, clear):
-        return list(self.encode(iter(clear)))
+        return self.encode(iter(clear))
 
     def __rshift__(self, cipher):
-        return list(self.decode(iter(cipher)))
+        return self.decode(iter(cipher))
 
 class CodecStack(Codec):
     def __init__(self, upper, lower):
@@ -38,9 +42,13 @@ class Reverse(Codec):
         return self.rev.decode(clear)
 
     def decode(self, cipher):
-        return self.rev.encode(clear)
+        return self.rev.encode(cipher)
 
 class Unicode(Codec):
+    def __init__(self):
+        self.up = str
+        self.down = int
+
     def encode(self, clear):
         for s in clear:
             yield ord(s)
@@ -51,11 +59,12 @@ class Unicode(Codec):
 
 class Binary(Codec):
     def __init__(self, bits=8, big_endian=False):
-
         if big_endian:
             raise Exception("Big Endian not supported yet")
 
         self.bits = bits
+        self.up = int
+        self.down = 'bit'
 
     def encode(self, clear):
         for c in clear:
@@ -101,3 +110,9 @@ class RLE(Codec):
         for i in range(0,count):
             yield symbol
 
+class Words(Codec):
+    def encode(self, clear):
+        return ' '.join(clear)
+
+    def decode(self, cipher):
+        yield from cipher.split()
