@@ -1,28 +1,22 @@
 from collections import defaultdict
 from codec import Codec
+from huffman import Huffman
 
 class Markov(object):
 
     def __init__(self, ngrams):
-        self._table = defaultdict(lambda: defaultdict(lambda: 0))
+        table = defaultdict(lambda: defaultdict(lambda: 0))
         for (ngram, count) in ngrams:
                 state = ngram[:-1]
                 step = ngram[-1:]
                 self._table[state][step] += 1
 
-        self._sums = {}
-        for (state, steps) in self._table.items():
-            self._sums[state] = sum(steps.values())
+        model = {}
+        for (state, steps) in table.items():
+            model[state] = Huffman(steps.items())
 
         self._state = "." * len(next(self._sums.keys()))
 
-    @staticmethod
-    def load(filename):
-        with open(filename, "r") as f:
-            def reader():
-                for line in f:
-                    yield line.split()
-            return Markov(reader())
                 
 
     

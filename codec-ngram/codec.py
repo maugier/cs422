@@ -17,10 +17,10 @@ class Codec(object):
         return CodecStack(upper, lower)
 
     def __lshift__(self, clear):
-        return self.encode(iter(clear))
+        return list(self.encode(iter(clear)))
 
     def __rshift__(self, cipher):
-        return self.decode(iter(cipher))
+        return list(self.decode(iter(cipher)))
 
 class CodecStack(Codec):
     def __init__(self, upper, lower):
