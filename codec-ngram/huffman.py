@@ -37,3 +37,8 @@ class Huffman(Codec):
                 else:
                     t = t[0]
             yield t
+
+
+if __name__ == '__main__':
+    import domain
+    h = Huffman(dict(domain.histogram))
