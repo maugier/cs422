@@ -4,8 +4,8 @@ from itertools import count
 import domain
 
 class Huffman(Codec):
-    def __init__(self, distribution):
-        h = list(map(lambda x,y: (x[1],y,x[0]), distribution.items(), count()))
+    def __init__(self, distribution, pad=False):
+        h = list(map(lambda x,y: (int(x[1]),y,x[0]), distribution, count()))
         heapify(h)
         while len(h) > 1:
             (ap,c,a) = heappop(h)
@@ -13,6 +13,8 @@ class Huffman(Codec):
             heappush(h, (ap+bp, c, (a,b)))
         
         self.tree = h[0][2]
+        self.pad = pad
+
 
         def mkcode(t,p,c):
             if isinstance(t, tuple):
@@ -30,13 +32,31 @@ class Huffman(Codec):
             yield from self.code[s]
 
     def decode(self, symbols):
-        while True:
-            t = self.tree
+        t = self.tree
+        try:
+            while True:
+                while(isinstance(t, tuple)):
+                    if next(symbols):
+                        t = t[1]
+                    else:
+                        t = t[0]
+                yield t
+                t = self.tree
+        except StopIteration:
+            if t is self.tree: # decoding stopped on proper boundary
+                raise 
+            if not self.pad: # decoding stopped on improper boundary and padding
+                             # was not requested:
+
+                raise Exception("Input stream interrupted")
+
             while(isinstance(t, tuple)):
-                if next(symbols):
-                    t = t[1]
-                else:
-                    t = t[0]
+                t = t[0]
+
             yield t
 
-DNSHuffman = Huffman(dict(domain.histogram))
+DNSHuffman = Huffman(domain.histogram)
+
+def HuffmanFile(f, **kw):
+    with open(f, "r") as handle:
+        return Huffman(line.split() for line in handle, **kw)    
