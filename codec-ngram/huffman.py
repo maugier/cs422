@@ -1,16 +1,17 @@
 from codec import Codec
 from heapq import *
+from itertools import count
 
 class Huffman(Codec):
     def __init__(self, distribution):
-        h = list(map(lambda x: (x[1],x[0]), distribution.items()))
+        h = list(map(lambda x,y: (x[1],y,x[0]), distribution.items(), count()))
         heapify(h)
         while len(h) > 1:
-            (ap,a) = heappop(h)
-            (bp,b) = heappop(h)
-            heappush(h, (ap+bp, (a,b)))
+            (ap,c,a) = heappop(h)
+            (bp,_,b) = heappop(h)
+            heappush(h, (ap+bp, c, (a,b)))
         
-        self.tree = h[0][1]
+        self.tree = h[0][2]
 
         def mkcode(t,p,c):
             if isinstance(t, tuple):
