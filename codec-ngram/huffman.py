@@ -1,6 +1,7 @@
 from codec import Codec
 from heapq import *
 from itertools import count
+import domain
 
 class Huffman(Codec):
     def __init__(self, distribution):
@@ -38,7 +39,4 @@ class Huffman(Codec):
                     t = t[0]
             yield t
 
-
-if __name__ == '__main__':
-    import domain
-    h = Huffman(dict(domain.histogram))
+DNSHuffman = Huffman(dict(domain.histogram))
