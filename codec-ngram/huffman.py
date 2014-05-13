@@ -26,13 +26,22 @@ class Huffman(Codec):
         self.code = {}
         mkcode(self.tree, (), self.code)
 
-            
-    def encode(self, clear):
+    def real_encode(self, clear):
         for s in clear:
             yield from self.code[s]
 
+    def encode(self, clear):
+        if self.pad:
+            yield from unpad(self.real_encode(clear))
+        else:
+            yield from self.real_encode(clear)
+
     def decode(self, symbols):
         t = self.tree
+
+        if self.pad:
+            symbols = padded(symbols)
+
         try:
             while True:
                 while(isinstance(t, tuple)):
@@ -54,6 +63,17 @@ class Huffman(Codec):
                 t = t[0]
 
             yield t
+
+def pad(padding, src):
+    yield from src
+    yield padding
+
+def unpad(src):
+    x = next(src)
+    while True:
+        (x,y) = (next(src), x)
+        yield y
+
 
 DNSHuffman = Huffman(domain.histogram)
 
