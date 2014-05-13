@@ -26,26 +26,17 @@ class Huffman(Codec):
         self.code = {}
         mkcode(self.tree, (), self.code)
 
-    def real_encode(self, clear):
+    def encode(self, clear):
         for s in clear:
             yield from self.code[s]
 
-    def encode(self, clear):
-        if self.pad:
-            yield from unpad(self.real_encode(clear))
-        else:
-            yield from self.real_encode(clear)
-
     def decode(self, symbols):
         t = self.tree
-
-        if self.pad:
-            symbols = pad(0,symbols)
-
+        src = iter(symbols)
         try:
             while True:
                 while(isinstance(t, tuple)):
-                    if next(symbols):
+                    if next(src):
                         t = t[1]
                     else:
                         t = t[0]
@@ -63,17 +54,6 @@ class Huffman(Codec):
                 t = t[0]
 
             yield t
-
-
-def pad(padding, src):
-    yield from src
-    yield padding
-
-def unpad(src):
-    x = next(src)
-    while True:
-        (x,y) = (next(src), x)
-        yield y
 
 def HuffmanFile(f, **kw):
     with open(f, "r") as handle:

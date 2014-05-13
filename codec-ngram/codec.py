@@ -1,4 +1,6 @@
 
+import types
+
 class Codec(object):
     def __init__(self):
         self.up = None
@@ -17,10 +19,18 @@ class Codec(object):
         return CodecStack(upper, lower)
 
     def __lshift__(self, clear):
-        return list(self.encode(iter(clear)))
+        out = self.encode(clear)
+        if isinstance(out, types.GeneratorType):
+            return list(out)
+        else:
+            return out
 
     def __rshift__(self, cipher):
-        return list(self.decode(iter(cipher)))
+        out = self.decode(cipher)
+        if isinstance(out, types.GeneratorType):
+            return list(out)
+        else:
+            return out
 
 class CodecStack(Codec):
     def __init__(self, upper, lower):
@@ -44,7 +54,7 @@ class Reverse(Codec):
     def decode(self, cipher):
         return self.rev.encode(cipher)
 
-class Unicode(Codec):
+class Ascii(Codec):
     def __init__(self):
         self.up = str
         self.down = int
@@ -54,7 +64,14 @@ class Unicode(Codec):
             yield ord(s)
     def decode(self, cipher):
         for c in cipher:
-            yield unichr(c)
+            yield chr(c)
+
+class UTF8(Codec):
+    def encode(self, clear):
+        return (x for c in clear for x in c.encode('utf8'))
+
+    def decode(self, cipher):
+        return bytes(cipher).decode("utf8")
         
 
 class Binary(Codec):
