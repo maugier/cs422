@@ -55,7 +55,8 @@ class Huffman(Codec):
 
             yield t
 
-DNSHuffman = Huffman(domain.histogram)
+def DNSHuffman(**kw):
+    return Huffman(domain.histogram, **kw)
 
 def HuffmanFile(f, **kw):
     with open(f, "r") as handle:
