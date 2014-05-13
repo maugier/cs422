@@ -32,6 +32,15 @@ def tokenize(s):
             yield ''.join(g).lower()
 
 if __name__ == "__main__":
+
+  top = set([u'_NUL'])
+
+  with open('top1000tokens','r') as toph:
+    for line in toph:
+      (t,c) = line.split()
+      top.add(t.decode('utf-8'))
+
+
   for line in sys.stdin:
     try:
         tweet = json.loads(line)
@@ -42,14 +51,14 @@ if __name__ == "__main__":
         if text[0:3] == u'RT ':
             continue
 
-        #tokens = ([u'_NUL'] * (NGRAM_LENGTH - 1)) + list(tokenize(text)) + [u'_NUL']
-        tokens = list(tokenize(text))
+        tokens = ([u'_NUL'] * (NGRAM_LENGTH - 1)) + list(tokenize(text)) + [u'_NUL']
+        #tokens = list(tokenize(text))
 
-        #while(len(tokens) >= NGRAM_LENGTH):
-        #   print("%s\t1" % u' '.join(tokens[0:NGRAM_LENGTH]).encode("utf8"))
-        #   tokens = tokens[1:]
-        for t in tokens:
-            print("%s\t1" % t)
+        while(len(tokens) >= NGRAM_LENGTH):
+           streak = tokens[0:NGRAM_LENGTH]
+           if set(streak).issubset(top):
+             print("%s\t1" % u' '.join(tokens[0:NGRAM_LENGTH]).encode("utf8"))
+           tokens = tokens[1:]
 
     except KeyError:
         continue
