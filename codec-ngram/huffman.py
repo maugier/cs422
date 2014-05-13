@@ -40,7 +40,7 @@ class Huffman(Codec):
         t = self.tree
 
         if self.pad:
-            symbols = padded(symbols)
+            symbols = pad(0,symbols)
 
         try:
             while True:
