@@ -2,10 +2,12 @@ from collections import defaultdict
 from codec import Codec
 from huffman import Huffman
 
+
 class Markov(Codec):
 
-    def __init__(self, ngrams, blank = "."):
+    def __init__(self, ngrams, blank = ".", advance = lambda l,x: l[1:] + x):
         statelen = None
+        self.advance = advance
         table = defaultdict(lambda: defaultdict(lambda: 0))
         for (ngram, count) in ngrams:
                 state = ngram[:-1]
@@ -33,7 +35,7 @@ class Markov(Codec):
             if state not in self.model:
                 state = self.initstate
             yield from self.model[state].encode((c,))
-            state = state[1:] + c
+            state = advance(state,c)
 
     def decode(self, cipher):
         stop = [False]
@@ -49,7 +51,7 @@ class Markov(Codec):
             if state not in self.model:
                 state = self.initstate
             c = next(self.model[state].decode(src))
-            state = state[1:] + c
+            state = advance(state, c)
             yield c
     
 
@@ -64,6 +66,6 @@ def NGramMarkov(filename):
 def TokenMarkov(filename):
     def process(line):
         words = line.split()
-        return (words[:-1], words[-1])
+        return (words[:-1], int(words[-1]))
     with open(filename, "r") as h:
-        return Markov((process(line) for line in h), blank=['_NUL'])
+        return Markov((process(line) for line in h), blank=('_NUL',), advance=lambda l,x: tuple(l[1:] + [x]))
