@@ -30,7 +30,7 @@ class Markov(Codec):
     def encode(self, clear):
         state = self.state
         for c in clear:
-            if state not in model:
+            if state not in self.model:
                 state = self.initstate
             yield from self.model[state].encode((c,))
             state = state[1:] + c
@@ -46,7 +46,7 @@ class Markov(Codec):
         state = self.state
         src = wrap(cipher)
         while not stop[0]:
-            if state not in model:
+            if state not in self.model:
                 state = self.initstate
             c = next(self.model[state].decode(src))
             state = state[1:] + c
