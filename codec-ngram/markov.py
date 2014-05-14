@@ -11,7 +11,7 @@ class Markov(Codec):
         table = defaultdict(lambda: defaultdict(lambda: 0))
         for (ngram, count) in ngrams:
                 state = ngram[:-1]
-                step = ngram[-1:]
+                step = ngram[-1]
                 if statelen is None:
                     statelen = len(state)
                 elif len(state) != statelen:
@@ -66,6 +66,6 @@ def NGramMarkov(filename):
 def TokenMarkov(filename):
     def process(line):
         words = line.split()
-        return (words[:-1], int(words[-1]))
+        return (tuple(words[:-1]), int(words[-1]))
     with open(filename, "r") as h:
         return Markov((process(line) for line in h), blank=('_NUL',), advance=lambda l,x: tuple(l[1:] + [x]))
