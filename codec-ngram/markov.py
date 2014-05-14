@@ -43,3 +43,14 @@ class Markov(Codec):
 # Test code
 test = Markov([(".a",1),("ab",1),("ac",1),("ba",1),("bc",1),("ca",1),("cb",1)])
 
+
+def NGramMarkov(filename):
+    with open(filename, "r") as h:
+        return Markov(l.split() for l in h)
+
+def TokenMarkov(filename):
+    def process(line):
+        words = line.split()
+        return ([words[:-1], words[-1])
+    with open(filename, "r") as h:
+        return Markov(process(line) for line in h)
