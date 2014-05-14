@@ -35,7 +35,7 @@ class Markov(Codec):
             if state not in self.model:
                 state = self.initstate
             yield from self.model[state].encode((c,))
-            state = advance(state,c)
+            state = self.advance(state,c)
 
     def decode(self, cipher):
         stop = [False]
@@ -51,7 +51,7 @@ class Markov(Codec):
             if state not in self.model:
                 state = self.initstate
             c = next(self.model[state].decode(src))
-            state = advance(state, c)
+            state = self.advance(state, c)
             yield c
     
 
@@ -68,4 +68,4 @@ def TokenMarkov(filename):
         words = line.split()
         return (tuple(words[:-1]), int(words[-1]))
     with open(filename, "r") as h:
-        return Markov((process(line) for line in h), blank=('_NUL',), advance=lambda l,x: tuple(l[1:] + [x]))
+        return Markov((process(line) for line in h), blank=('_NUL',), advance=lambda l,x: tuple(l[1:] + (x,)))
