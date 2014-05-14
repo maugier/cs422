@@ -18,7 +18,7 @@ class Markov(Codec):
                     raise("Inconsistent state size in input ({0} vs {1})".format(len(state), statelen))
 
 
-                table[state][step] += 1
+                table[state][step] += int(count)
 
         self.initstate = blank * statelen
         self.state = self.initstate
