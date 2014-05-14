@@ -4,7 +4,7 @@ from huffman import Huffman
 
 class Markov(Codec):
 
-    def __init__(self, ngrams):
+    def __init__(self, ngrams, blank = "."):
         statelen = None
         table = defaultdict(lambda: defaultdict(lambda: 0))
         for (ngram, count) in ngrams:
@@ -18,7 +18,8 @@ class Markov(Codec):
 
                 table[state][step] += 1
 
-        self.state = "." * statelen
+        self.initstate = blank * statelen
+        self.state = self.initstate
         model = {}
         for (state, steps) in table.items():
             model[state] = Huffman(steps.items())
@@ -29,6 +30,8 @@ class Markov(Codec):
     def encode(self, clear):
         state = self.state
         for c in clear:
+            if state not in model:
+                state = self.initstate
             yield from self.model[state].encode((c,))
             state = state[1:] + c
 
@@ -43,6 +46,8 @@ class Markov(Codec):
         state = self.state
         src = wrap(cipher)
         while not stop[0]:
+            if state not in model:
+                state = self.initstate
             c = next(self.model[state].decode(src))
             state = state[1:] + c
             yield c
@@ -54,11 +59,11 @@ test = Markov([(".a",1),("ab",1),("ac",1),("ba",1),("bc",1),("ca",1),("cb",1)])
 
 def NGramMarkov(filename):
     with open(filename, "r") as h:
-        return Markov(l.split() for l in h)
+        return Markov((l.split() for l in h), blank=".")
 
 def TokenMarkov(filename):
     def process(line):
         words = line.split()
         return (words[:-1], words[-1])
     with open(filename, "r") as h:
-        return Markov(process(line) for line in h)
+        return Markov((process(line) for line in h), blank=['_NUL'])
