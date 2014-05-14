@@ -90,11 +90,12 @@ class Binary(Codec):
                 c = c // 2
 
     def decode(self, cipher):
+        src = iter(cipher)
         while True:
             a = 1
             c = 0
             for i in range(0, self.bits):
-                c += next(cipher)*a
+                c += next(src)*a
                 a *= 2
             yield c
 
