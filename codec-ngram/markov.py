@@ -33,9 +33,17 @@ class Markov(Codec):
             state = state[1:] + c
 
     def decode(self, cipher):
+        stop = [False]
+        def wrap(cipher):
+            yield from cipher
+            stop[0] = True
+            while True:
+                yield 0
+
         state = self.state
-        while True:
-            c = next(self.model[state].decode(cipher))
+        src = wrap(cipher)
+        while not stop[0]:
+            c = next(self.model[state].decode(src))
             state = state[1:] + c
             yield c
     
@@ -51,6 +59,6 @@ def NGramMarkov(filename):
 def TokenMarkov(filename):
     def process(line):
         words = line.split()
-        return ([words[:-1], words[-1])
+        return (words[:-1], words[-1])
     with open(filename, "r") as h:
         return Markov(process(line) for line in h)
