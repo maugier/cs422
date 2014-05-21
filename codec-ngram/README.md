@@ -43,6 +43,12 @@ For token-based Markov you need a file with a similar format with whitespace-sep
     etc...
 
 
+You can download our sample data at http://lacalsrv6.epfl.ch/cs422. Uncompress
+the files with
+
+    unxz *.xz
+
+
 Running
 -------
 
@@ -53,14 +59,18 @@ one for a steganographic channel would be
     import huffman
     import markov
 
-    rtm = codec.Reverse(markov.TokenMarkov("./datafile-tokens"))
+    rtm = codec.Reverse(markov.TokenMarkov("ntokens"))
 
-    classic_code = codec.UTF8() / codec.Binary() / rtm / codec.Words()
+    u8b = codec.UTF8() / codec.Binary()
+
+    classic_code = u8b / rtm / codec.Words()
     dns_code = huffman.DNSHuffman() / codec.Padding() / rtm / Words()
 
-    rcm = codec.Reverse(markov.NGramMarkov("./datafile-ngrams"))
+    rcm = codec.Reverse(markov.NGramMarkov("ngrams"))
 
-    charbased_generic_code = codec.UTF8() / codec.Binary() / rcm 
+    charbased_generic_code = u8b / rcm 
+
+    simple_token_huffman = u8b / huffman.FileHuffman("top1000tokens")
 
 Note that loading a large datafile requires significant memory and will take
 some time. Don't panic and watch for resource usage if you are afraid the code
