@@ -1,9 +1,20 @@
 from codec import Codec
 from heapq import *
 from itertools import count
-import domain
 
 class Huffman(Codec):
+    """Huffman codec, encodes a stream of symbols to a stream of bits.
+
+    distribution: an iterable over pairs of (symbol, frequency) used
+    to build the compression tree.
+
+    pad: when decoding, pad the input stream with zeros if reqired. If
+    set to false (default), decoding will raise an exception if the bitstream
+    does not stop on symbol boundaries.
+
+    Example:
+    h = Huffman([('a',5),('b',2),('c',3)])
+    """
     def __init__(self, distribution, pad=False):
         h = list(map(lambda x,y: (int(x[1]),y,x[0]), distribution, count()))
         heapify(h)
@@ -56,8 +67,17 @@ class Huffman(Codec):
             yield t
 
 def HuffmanFile(f, **kw):
+    """Build a Huffman code from frequencies contained in a file.
+
+    f: filename to read. Expected to point to a text file of lines
+    containing a whitespace-separated pair of symbol and frequency.
+
+    other options (like pad) are passed to the underlying Huffman object.
+    """
     with open(f, "r") as handle:
         return Huffman(line.split() for line in handle, **kw)    
 
 def DNSHuffman(**kw):
+    """Huffman codec suitable for encoding of domain names."""
+    import domain
     return Huffman(domain.histogram, **kw)

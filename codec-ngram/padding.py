@@ -1,7 +1,14 @@
 from codec import *
 
 class Padding(Codec):
+    """Add a padding layer to a stream of bits.
 
+    This codec protects the lower layer from alignment issues.
+    When the lower layer encodes, it may decide to pad its input
+    with 0s. When decoding, the extra 0s will be removed.
+    """
+
+    # This is bullshit, should be identity
     def encode(self, clear):
         stop = [False]
         def consume():

@@ -4,7 +4,18 @@ from huffman import Huffman
 
 
 class Markov(Codec):
+    """Generic Markov encoder, encode a stream of tokens
+    from a known markov model into a stream of bits.
 
+    Do not use this directly unless you want to define a Markov
+    encoder over a custom token type.
+
+    ngrams: an iterable of (ngram, frequency) pairs. ngram itself
+    is a hashable indexable of symbols.
+    blank: the sentinel symbol used to mark start and end of sentences
+    advance: the transformation function to update the ngram to the next state.
+
+    """
     def __init__(self, ngrams, blank = ".", advance = lambda l,x: l[1:] + x):
         statelen = None
         self.advance = advance
@@ -60,10 +71,42 @@ test = Markov([(".a",1),("ab",1),("ac",1),("ba",1),("bc",1),("ca",1),("cb",1)])
 
 
 def NGramMarkov(filename):
+    """Markov encoder over single characters (ngrams).
+
+    filename: name of a file containing lines of whitespace-separated 
+    pairs of ngram and frequencies. The sentinel character is the dot.
+
+    A sample file looks like so:
+
+    ..a 3
+    ..b 2
+    .aa 3
+    aaa 1
+    aab 2
+    aac 3
+    aba 2
+    ...
+
+    """
     with open(filename, "r") as h:
         return Markov((l.split() for l in h), blank=".")
 
 def TokenMarkov(filename):
+    """Markov encoder over word tokens.
+
+    filename: name of a file containing lines of whitespace-separated
+    tokens and ended by a frequency. The sentinel symbol is the string "_NUL".
+
+    A sample file looks like so:
+
+    _NUL _NUL Hello 4
+    _NUL Hello World 3
+    Hello World !!! 2
+    Hello World ? 1
+    ...
+
+    """
+
     def process(line):
         words = line.split()
         return (tuple(words[:-1]), int(words[-1]))
