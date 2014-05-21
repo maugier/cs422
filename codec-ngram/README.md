@@ -70,7 +70,12 @@ one for a steganographic channel would be
 
     charbased_generic_code = u8b / rcm 
 
-    simple_token_huffman = u8b / huffman.FileHuffman("top1000tokens")
+    simple_token_huffman = u8b / codec.Reverse(huffman.FileHuffman("top1000tokens"))
+
+Then to use them, for instance
+
+    classic_code << "ATTACK www.example.com"
+    classic_code >> "i like turtles"
 
 Note that loading a large datafile requires significant memory and will take
 some time. Don't panic and watch for resource usage if you are afraid the code
